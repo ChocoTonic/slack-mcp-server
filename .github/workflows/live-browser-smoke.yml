@@ -15,7 +15,12 @@ on:
 
 jobs:
   smoke:
+    # Forks must configure their own deployed endpoint. Checking the upstream
+    # author's live site against a fork's different source creates false failures.
+    if: github.repository == 'jtalk22/slack-mcp-server' || vars.LIVE_SMOKE_BASE_URL != ''
     runs-on: ubuntu-latest
+    env:
+      LIVE_BASE_URL: ${{ vars.LIVE_SMOKE_BASE_URL || 'https://jtalk22.github.io/slack-mcp-server' }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -35,7 +40,7 @@ jobs:
       - name: Run deployed GitHub Pages smoke
         run: >-
           node scripts/browser-smoke.js --mode live
-          --base-url https://jtalk22.github.io/slack-mcp-server
+          --base-url "$LIVE_BASE_URL"
           --retries ${{ github.event_name == 'release' && '30' || '12' }}
           --retry-delay-ms 10000
           ${{ github.event_name == 'release' && '--strict-version' || '' }}
