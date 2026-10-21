@@ -2,7 +2,10 @@
   "name": "slack-browser-ops-worker",
   "private": true,
   "type": "module",
+  "scripts": {
+    "test": "node --test handler.test.js"
+  },
   "dependencies": {
-    "@cloudflare/puppeteer": "^1.2.0"
+    "@cloudflare/playwright": "^1.3.6"
   }
 }

@@ -7,6 +7,24 @@ on:
     branches: [main]
 
 jobs:
+  browser-worker:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: workers/browser-ops
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24.22.1'
+      - run: npm ci
+      - run: npm test
+      - run: npm audit --audit-level=low
+      - name: Bundle the Cloudflare Worker without deploying
+        run: npm exec --yes --package=wrangler@4.151.3 -- wrangler deploy --dry-run --outdir "${{ runner.temp }}/browser-worker-build"
+        env:
+          WRANGLER_SEND_METRICS: 'false'
+
   test:
     runs-on: ubuntu-latest
 
